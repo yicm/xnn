@@ -1,5 +1,5 @@
-#ifndef _HELLO_CORE_LOGGER_LOGGER_HPP_
-#define _HELLO_CORE_LOGGER_LOGGER_HPP_
+#ifndef _XNN_LOGGER_LOGGER_HPP_
+#define _XNN_LOGGER_LOGGER_HPP_
 
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
@@ -10,12 +10,12 @@
 
 
 // logger setting
-#define HELLO_LOGGER_NAME "hello"
-#define HELLO_LOGGER_LOGGER_ERROR_FILENAME "logs/hello_error.log"
-#define HELLO_LOGGER_LOGGER_TRACE_FILENAME "logs/hello_trace.log"
-#define HELLO_LOGGER_PATTERN "[%Y-%m-%d %H:%M:%S.%e][%^%l%$][%t][%s:%#] %v"
-#define HELLO_LOGGER_ROTATING_MAX_FILE_SIZE (1024*1024)
-#define HELLO_LOGGER_ROTATING_MAX_FILE_NUM 5
+#define XNN_LOGGER_NAME "xnn"
+#define XNN_LOGGER_LOGGER_ERROR_FILENAME "logs/xnn_error.log"
+#define XNN_LOGGER_LOGGER_TRACE_FILENAME "logs/xnn_trace.log"
+#define XNN_LOGGER_PATTERN "[%Y-%m-%d %H:%M:%S.%e][%^%l%$][%t][%s:%#] %v"
+#define XNN_LOGGER_ROTATING_MAX_FILE_SIZE (1024*1024)
+#define XNN_LOGGER_ROTATING_MAX_FILE_NUM 5
 
 
 #define _TRACE 0
@@ -26,12 +26,12 @@
 #define _CRITI 5
 #define _OFF 6
 
-#define HELLO_LOGGER_TRACE(...) HelloLoggerOut(_TRACE, __FILE__, __LINE__, __VA_ARGS__)
-#define HELLO_LOGGER_DEBUG(...) HelloLoggerOut(_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define HELLO_LOGGER_INFO(...) HelloLoggerOut(_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define HELLO_LOGGER_WARN(...) HelloLoggerOut(_WARN, __FILE__, __LINE__, __VA_ARGS__)
-#define HELLO_LOGGER_ERROR(...) HelloLoggerOut(_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define HELLO_LOGGER_CRITICAL(...) HelloLoggerOut(_CRITI, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_TRACE(...) HelloLoggerOut(_TRACE, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_DEBUG(...) HelloLoggerOut(_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_INFO(...) HelloLoggerOut(_INFO, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_WARN(...) HelloLoggerOut(_WARN, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_ERROR(...) HelloLoggerOut(_ERROR, __FILE__, __LINE__, __VA_ARGS__)
+#define XNN_LOGGER_CRITICAL(...) HelloLoggerOut(_CRITI, __FILE__, __LINE__, __VA_ARGS__)
 
 
 #ifdef __cplusplus
@@ -64,7 +64,7 @@ void HelloLoggerOut(const int level,
         const int line,
         const T &...msg) {
     // Note: sdplog::get is a thread safe function
-    std::shared_ptr<spdlog::logger> logger_ptr = spdlog::get(HELLO_LOGGER_NAME);
+    std::shared_ptr<spdlog::logger> logger_ptr = spdlog::get(XNN_LOGGER_NAME);
     if (!logger_ptr) {
         fprintf(stderr, "Failed to get logger, Please init logger firstly.\n");
     }

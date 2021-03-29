@@ -3,11 +3,13 @@ PROJECT(Tests)
 
 INCLUDE_DIRECTORIES(
     ${SPDLOG_INCLUDE_DIR}
+    ${JSONCPP_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src
 )
 
 LINK_DIRECTORIES(
     ${SPDLOG_LIBRARY_DIR}
+    ${JSONCPP_LIBRARY_DIR}
 )
 
 FILE(GLOB APP_SOURCES *.cpp)
@@ -19,6 +21,7 @@ FOREACH(testsourcefile ${APP_SOURCES})
     TARGET_LINK_LIBRARIES(${testname}
         ${SPDLOG_LIBS}
         module_logger
+        module_config
         )
 
     INSTALL(TARGETS ${testname}

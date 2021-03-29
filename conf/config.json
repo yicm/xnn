@@ -1,0 +1,15 @@
+{
+    "src_format":"RGB",
+    "dst_format":"GRAY",
+    "mean":[
+        123.675,
+        116.28,
+        103.53
+    ],
+    "normal":[
+        0.01712475,
+        0.017507,
+        0.01742919
+    ],
+    "has_softmax":false
+}

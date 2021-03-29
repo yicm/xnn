@@ -1,4 +1,5 @@
 {
+    "num_class": 45,
     "src_format":"RGB",
     "dst_format":"GRAY",
     "mean":[

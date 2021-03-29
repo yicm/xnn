@@ -22,3 +22,9 @@ $ cd build
 $ make -j
 $ make install DESTDIR={your destination}
 ```
+
+
+# Reference
+
+- https://github.com/open-source-parsers/jsoncpp
+- https://github.com/gabime/spdlog

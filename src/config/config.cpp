@@ -17,6 +17,12 @@ bool XNNConfig::hasParsed()
 bool XNNConfig::parseConfig(std::string filename)
 {
     std::ifstream ifs(filename, std::ios::in);
+    if (!ifs.is_open() || ifs.fail())
+    {
+       fprintf(stderr, "Failed to open config file: %s\n", filename.c_str());
+       return false;
+    }
+
     Json::CharReaderBuilder builder;
     // support json comment
     builder["collectComments"] = true;
@@ -29,6 +35,8 @@ bool XNNConfig::parseConfig(std::string filename)
         return false;
     }
     ifs.close();
+    // model
+    model_ = app_root_["model"].asString();
     // num_class
     num_class_ = app_root_["num_class"].asInt();
     // src_format
@@ -73,6 +81,13 @@ bool XNNConfig::parseConfig(std::string filename)
     has_softmax_ = app_root_["has_softmax"].asBool();
 
     has_parsed_ = true;
+    
+    return true;
+}
+
+std::string XNNConfig::getModel()
+{
+    return model_;
 }
 
 int XNNConfig::getNumClass()

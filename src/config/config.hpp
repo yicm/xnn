@@ -14,6 +14,7 @@ public:
     bool parseConfig(std::string filename = "./config.json");
 
     // getters
+    std::string getModel();
     int getNumClass();
     XNNPixelFormat getSrcFormat();
     XNNPixelFormat getDstFormat();
@@ -22,6 +23,7 @@ public:
     bool hasSoftmax();
 
 private:
+    std::string model_;
     int num_class_;
     XNNPixelFormat src_format_;
     XNNPixelFormat dst_format_;

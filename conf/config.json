@@ -1,16 +1,13 @@
 {
+    "model": "model_200.mnn",
     "num_class": 45,
-    "src_format":"RGB",
+    "src_format":"GRAY",
     "dst_format":"GRAY",
     "mean":[
-        123.675,
-        116.28,
-        103.53
+        128.0
     ],
     "normal":[
-        0.01712475,
-        0.017507,
-        0.01742919
+        1
     ],
     "has_softmax":false
 }

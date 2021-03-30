@@ -17,7 +17,7 @@ namespace xnn
     {
 
     public:
-        void init(const std::string model_path, const int width, const int height);
+        bool init(std::string model_path = "");
 
         XNNStatus run(XNNImage *image, std::vector<std::pair<int, float>>& result, int topk = 5);
 

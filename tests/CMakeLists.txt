@@ -10,6 +10,7 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(
     ${SPDLOG_LIBRARY_DIR}
     ${JSONCPP_LIBRARY_DIR}
+    ${MNN_LIBRARY_DIR}
 )
 
 FILE(GLOB APP_SOURCES *.cpp)
@@ -22,6 +23,7 @@ FOREACH(testsourcefile ${APP_SOURCES})
         ${SPDLOG_LIBS}
         module_logger
         module_config
+        module_mnn
         )
 
     INSTALL(TARGETS ${testname}

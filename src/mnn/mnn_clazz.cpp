@@ -7,14 +7,23 @@
 
 namespace xnn
 {
-    void MNNClazz::init(const std::string model_path, const int width, const int height)
+    bool MNNClazz::init(std::string model_path)
     {
         if (!XNNConfig::GetInstance()->hasParsed()) {
-            XNNConfig::GetInstance()->parseConfig();
+            if (!XNNConfig::GetInstance()->parseConfig()) {
+                return false;
+            }
         }
         num_class_ = XNNConfig::GetInstance()->getNumClass();
-
-        interpreter_ = MNN::Interpreter::createFromFile(model_path.c_str());
+        if (model_path.size() != 0) {
+            interpreter_ = MNN::Interpreter::createFromFile(model_path.c_str());
+        } else {
+            interpreter_ = MNN::Interpreter::createFromFile(XNNConfig::GetInstance()->getModel().c_str());
+        }
+        if (interpreter_ == nullptr) {
+            fprintf(stderr, "Failed to create interpreter from file: %s, maybe this file doesn't exist.\n", XNNConfig::GetInstance()->getModel().c_str());
+            return false;
+        }
 
         schedule_config_.type = MNN_FORWARD_CPU;
         schedule_config_.numThread = 4;
@@ -23,7 +32,6 @@ namespace xnn
 
         auto shape = input_tensor_->shape();
         // the model has not input dimension
-        fprintf(stdout, "shape.size = %lu\n", shape.size());
         if (shape.size() == 0)
         {
             shape.resize(4);
@@ -35,11 +43,10 @@ namespace xnn
         // set batch to be 1
         shape[0] = 1;
 
-        interpreter_->resizeSession(session_);
-
         output_tensor_ = interpreter_->getSessionOutput(session_, nullptr);
-
         output_tensor_size = output_tensor_->elementSize();
+
+        return true;
     }
 
     XNNStatus MNNClazz::run(XNNImage *image, std::vector<std::pair<int, float>> &result, int topk)
@@ -65,6 +72,7 @@ namespace xnn
         shape[3] = image->height;
         // resize input tensor shape
         interpreter_->resizeTensor(input_tensor_, shape);
+        interpreter_->resizeSession(session_);
         // create image pretreat
         if (!pretreat_)
         {

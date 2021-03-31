@@ -23,6 +23,14 @@ $ make -j
 $ make install DESTDIR={your destination}
 ```
 
+# Test
+
+```bash
+$ cd build/bin/tests
+$ cp ../../../conf/config.json .
+$ cp ../../../resource/4.gray .
+$ ./test_mnn_clazz 4.gray
+```
 
 # Reference
 

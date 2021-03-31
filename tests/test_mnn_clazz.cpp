@@ -12,8 +12,8 @@ void readRawData(const char *filename, unsigned char *data) {
     fp = fopen(filename,"rb");
     if(fp == NULL)
     {
-        printf("failed to read file");
-        return;
+        printf("failed to read file\n");
+        exit(-1);
     }
     // get file size
     fseek (fp , 0 , SEEK_END);

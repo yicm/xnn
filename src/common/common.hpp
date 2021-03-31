@@ -5,7 +5,7 @@
 
 // A enum to represent pixel format
 typedef enum XNNPixelFormat {
-    XNN_PIX_RGBA,
+    XNN_PIX_RGBA = 0,
     XNN_PIX_RGB,
     XNN_PIX_BGR,
     XNN_PIX_GRAY,

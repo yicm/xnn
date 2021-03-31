@@ -14,7 +14,9 @@ namespace xnn
                 return false;
             }
         }
+        // get class number
         num_class_ = XNNConfig::GetInstance()->getNumClass();
+        // create interpreter from mnn file
         if (model_path.size() != 0) {
             interpreter_ = MNN::Interpreter::createFromFile(model_path.c_str());
         } else {
@@ -25,11 +27,18 @@ namespace xnn
             return false;
         }
 
+        // schedule config setting
         schedule_config_.type = MNN_FORWARD_CPU;
         schedule_config_.numThread = 4;
-        session_ = interpreter_->createSession(schedule_config_);
-        input_tensor_ = interpreter_->getSessionInput(session_, nullptr);
+        MNN::BackendConfig backend_config;
+        backend_config.precision = MNN::BackendConfig::Precision_Normal;
+        schedule_config_.backendConfig = &backend_config;
 
+        // create session
+        session_ = interpreter_->createSession(schedule_config_);
+        // get input tensor
+        input_tensor_ = interpreter_->getSessionInput(session_, nullptr);
+        // input shape setting
         auto shape = input_tensor_->shape();
         // the model has not input dimension
         if (shape.size() == 0)
@@ -42,6 +51,9 @@ namespace xnn
         }
         // set batch to be 1
         shape[0] = 1;
+
+        interpreter_->resizeTensor(input_tensor_, shape);
+        interpreter_->resizeSession(session_);
 
         output_tensor_ = interpreter_->getSessionOutput(session_, nullptr);
         output_tensor_size = output_tensor_->elementSize();
@@ -58,27 +70,13 @@ namespace xnn
         }
         // clear the old result
         result.clear();
-        // set input shape
-        auto shape = input_tensor_->shape();
-        if (image->pixel_format == XNN_PIX_BGR || image->pixel_format == XNN_PIX_RGB)
-        {
-            shape[1] = 3;
-        }
-        if (image->pixel_format == XNN_PIX_GRAY)
-        {
-            shape[1] = 1;
-        }
-        shape[2] = image->width;
-        shape[3] = image->height;
-        // resize input tensor shape
-        interpreter_->resizeTensor(input_tensor_, shape);
-        interpreter_->resizeSession(session_);
         // create image pretreat
         if (!pretreat_)
         {
             MNN::CV::ImageProcess::Config config;
+            //config.filterType = MNN::CV::BILINEAR;
             config.sourceFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getSrcFormat());;
-            config.destFormat = convertXNNPixFormat2MNN(image->pixel_format);
+            config.destFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getDstFormat());
             std::vector<float> means = XNNConfig::GetInstance()->getMeans();
             for (int i = 0; i < means.size(); i++) {
                 config.mean[i] = means[i];
@@ -87,6 +85,7 @@ namespace xnn
             for (int i = 0; i < normal.size(); i++) {
                 config.normal[i] = normal[i];
             }
+            fprintf(stdout, "img format: %d, %d\n", config.sourceFormat, config.destFormat);
 
             pretreat_ = MNN::CV::ImageProcess::create(config);
         }
@@ -98,8 +97,9 @@ namespace xnn
             // default float value
             auto output_data_ptr = output_tensor_->host<float>();
             // softmax
-            if (XNNConfig::GetInstance()->hasSoftmax())
+            if (!XNNConfig::GetInstance()->hasSoftmax())
             {
+                fprintf(stdout, "manual softmax\n");
                 auto input = MNN::Express::_Input({1, num_class_}, MNN::Express::NCHW);
                 auto input_ptr = input->writeMap<float>();
                 memcpy(input_ptr, output_data_ptr, num_class_ * sizeof(float));
@@ -111,7 +111,7 @@ namespace xnn
                 }
             }
             // non softmax
-            {
+            else {
                 for (int i = 0; i < output_tensor_size; ++i)
                 {
                     sorted_result[i] = std::make_pair(i, output_data_ptr[i]);
@@ -130,6 +130,7 @@ namespace xnn
 
     void MNNClazz::release()
     {
+        interpreter_->releaseModel();
         bool release_status = interpreter_->releaseSession(session_);
         if (!release_status)
         {

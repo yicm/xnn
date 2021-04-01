@@ -74,7 +74,7 @@ namespace xnn
         if (!pretreat_)
         {
             MNN::CV::ImageProcess::Config config;
-            //config.filterType = MNN::CV::BILINEAR;
+            config.filterType = MNN::CV::BILINEAR;
             config.sourceFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getSrcFormat());;
             config.destFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getDstFormat());
             std::vector<float> means = XNNConfig::GetInstance()->getMeans();
@@ -85,8 +85,7 @@ namespace xnn
             for (int i = 0; i < normal.size(); i++) {
                 config.normal[i] = normal[i];
             }
-            fprintf(stdout, "img format: %d, %d\n", config.sourceFormat, config.destFormat);
-
+            
             pretreat_ = MNN::CV::ImageProcess::create(config);
         }
         pretreat_->convert(image->data, image->height, image->width, 0, input_tensor_);
@@ -99,7 +98,6 @@ namespace xnn
             // softmax
             if (!XNNConfig::GetInstance()->hasSoftmax())
             {
-                fprintf(stdout, "manual softmax\n");
                 auto input = MNN::Express::_Input({1, num_class_}, MNN::Express::NCHW);
                 auto input_ptr = input->writeMap<float>();
                 memcpy(input_ptr, output_data_ptr, num_class_ * sizeof(float));

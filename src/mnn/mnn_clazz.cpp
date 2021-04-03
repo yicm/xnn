@@ -39,20 +39,21 @@ namespace xnn
         // get input tensor
         input_tensor_ = interpreter_->getSessionInput(session_, nullptr);
         // input shape setting
-        auto shape = input_tensor_->shape();
+        input_shape_ = input_tensor_->shape();
         // the model has not input dimension
-        if (shape.size() == 0)
+        if (input_shape_.size() == 0)
         {
-            shape.resize(4);
+            input_shape_.resize(4);
+            // todo: set shape to input size
         }
         else
         {
-            fprintf(stdout, "shape = [%d, %d, %d, %d]\n", shape[0], shape[1], shape[2], shape[3]);
+            fprintf(stdout, "shape = [%d, %d, %d, %d]\n", input_shape_[0], input_shape_[1], input_shape_[2], input_shape_[3]);
         }
         // set batch to be 1
-        shape[0] = 1;
+        input_shape_[0] = 1;
 
-        interpreter_->resizeTensor(input_tensor_, shape);
+        interpreter_->resizeTensor(input_tensor_, input_shape_);
         interpreter_->resizeSession(session_);
 
         output_tensor_ = interpreter_->getSessionOutput(session_, nullptr);
@@ -85,10 +86,15 @@ namespace xnn
             for (int i = 0; i < normal.size(); i++) {
                 config.normal[i] = normal[i];
             }
-            
+            fprintf(stdout, "src_format=%d, dst_format=%d\n", config.sourceFormat, config.destFormat);
             pretreat_ = MNN::CV::ImageProcess::create(config);
         }
-        pretreat_->convert(image->data, image->height, image->width, 0, input_tensor_);
+        // resize image
+        MNN::CV::Matrix trans;
+        trans.setScale((float)(image->width)/(input_shape_[3]), (float)(image->height)/(input_shape_[2]));
+        pretreat_->setMatrix(trans);
+        // convert image
+        pretreat_->convert(image->data, image->width, image->height, 0, input_tensor_);
         interpreter_->runSession(session_);
 
         std::vector<std::pair<int, float>> sorted_result(output_tensor_size);

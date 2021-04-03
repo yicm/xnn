@@ -49,6 +49,9 @@ bool XNNConfig::parseConfig(std::string filename)
     {
         src_format_ = XNN_PIX_GRAY;
     }
+    else if (src_format == "RGBA") {
+        src_format = XNN_PIX_RGBA;
+    }
     else
     {
         fprintf(stderr, "Do not support the source format: %s\n", src_format.c_str());

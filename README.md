@@ -1,7 +1,10 @@
 # Prerequisites
 
+- Linux-like System.
 - CMake 3.1+ installed.
 - Use a C++11 compiler(C++11 is optional).
+- For benchmark tests
+    - OpenCV：`sudo apt install libopencv-dev`
 
 # Build & Install
 
@@ -30,6 +33,14 @@ $ cd build/bin/tests
 $ cp ../../../conf/config.json .
 $ cp ../../../resource/4.gray .
 $ ./test_mnn_clazz 4.gray
+```
+
+# Benchmarks
+
+```bash
+$ cd build/bin/tests
+$ cp ../../../conf/config.json .
+$ ./test_mnn_clazz_benchmark {your_test_dataset}
 ```
 
 # Reference

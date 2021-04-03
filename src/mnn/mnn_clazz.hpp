@@ -30,6 +30,8 @@ namespace xnn
         MNN::Tensor *input_tensor_ = nullptr;
         MNN::Tensor *output_tensor_ = nullptr;
 
+        std::vector<int> input_shape_;
+
         MNN::CV::ImageProcess *pretreat_ = nullptr;
 
         int output_tensor_size = 0;

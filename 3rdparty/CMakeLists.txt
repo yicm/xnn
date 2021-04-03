@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-PROJECT(HiApp3rdparty)
+PROJECT(XNN3rdparty)
 
 # NOTE: build with source
 # ADD_SUBDIRECTORY(spdlog)

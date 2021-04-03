@@ -1,5 +1,5 @@
 {
-    "model": "model_200.mnn",
+    "model": "model_200_gray_int8.mnn",
     "num_class": 45,
     "src_format":"GRAY",
     "dst_format":"GRAY",
@@ -9,5 +9,5 @@
     "normal":[
         1
     ],
-    "has_softmax":false
+    "has_softmax":true
 }

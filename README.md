@@ -1,3 +1,5 @@
+![Build Action](https://github.com/yicm/xnn/actions/workflows/cmake.yml/badge.svg)
+
 # Prerequisites
 
 - Linux-like System.

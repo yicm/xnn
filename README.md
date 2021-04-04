@@ -21,7 +21,7 @@ $ make install DESTDIR={your destination}
 ```bash
 $ mkdir build
 $ cd build
-# cmake .. -DCMAKE_TOOLCHAIN_FILE=../platforms/linux/mips32r2-linux-gnu.toolchain.cmake
+$ cmake .. -DBUILD_BENCHMARKS=OFF -DCMAKE_TOOLCHAIN_FILE=../platforms/linux/mips32r2-linux-gnu.toolchain.cmake
 $ make -j
 $ make install DESTDIR={your destination}
 ```
@@ -47,3 +47,4 @@ $ ./test_mnn_clazz_benchmark {your_test_dataset}
 
 - https://github.com/open-source-parsers/jsoncpp
 - https://github.com/gabime/spdlog
+- https://github.com/nothings/stb

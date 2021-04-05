@@ -1,0 +1,13 @@
+{
+    "model": "model_new_182.mnn",
+    "num_class": 45,
+    "src_format":"GRAY",
+    "dst_format":"GRAY",
+    "mean":[
+        116.28
+    ],
+    "normal":[
+        0.017507
+    ],
+    "has_softmax":false
+}

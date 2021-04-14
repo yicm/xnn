@@ -1,29 +1,37 @@
 #include "mnn/mnn_clazz.hpp"
 
-#include "config/config.hpp"
-
 #include <iostream>
 #include <memory>
 
 namespace xnn
 {
-    bool MNNClazz::init(std::string model_path)
+    bool MNNClazz::init(int num_class, 
+                  std::vector<float> &means, 
+                  std::vector<float> &normals,
+                  std::string model_path,
+                  bool has_softmax)
     {
-        if (!XNNConfig::GetInstance()->hasParsed()) {
-            if (!XNNConfig::GetInstance()->parseConfig()) {
-                return false;
-            }
+        if (num_class <= 0) {
+            fprintf(stderr, "Parameter error: invalid number(%d) of class\n", num_class);
+            return false;
+        }
+        if (means.size() <= 0 || normals.size() <= 0) {
+            fprintf(stderr, "Parameter error: the size of MEANs or NORMALs is 0\n");
+            return false;
         }
         // get class number
-        num_class_ = XNNConfig::GetInstance()->getNumClass();
+        num_class_ = num_class;
+        // get means and normals
+        means_ = means;
+        normals_ = normals;
+        // setting has_softmax
+        has_softmax_ = has_softmax;
         // create interpreter from mnn file
         if (model_path.size() != 0) {
             interpreter_ = MNN::Interpreter::createFromFile(model_path.c_str());
-        } else {
-            interpreter_ = MNN::Interpreter::createFromFile(XNNConfig::GetInstance()->getModel().c_str());
         }
         if (interpreter_ == nullptr) {
-            fprintf(stderr, "Failed to create interpreter from file: %s, maybe this file doesn't exist.\n", XNNConfig::GetInstance()->getModel().c_str());
+            fprintf(stderr, "Failed to create interpreter from file: %s, maybe this file doesn't exist.\n", model_path.c_str());
             return false;
         }
 
@@ -76,15 +84,13 @@ namespace xnn
         {
             MNN::CV::ImageProcess::Config config;
             config.filterType = MNN::CV::BILINEAR;
-            config.sourceFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getSrcFormat());;
-            config.destFormat = convertXNNPixFormat2MNN(XNNConfig::GetInstance()->getDstFormat());
-            std::vector<float> means = XNNConfig::GetInstance()->getMeans();
-            for (int i = 0; i < means.size(); i++) {
-                config.mean[i] = means[i];
+            config.sourceFormat = convertXNNPixFormat2MNN(image->src_pixel_format);
+            config.destFormat = convertXNNPixFormat2MNN(image->dst_pixel_format);
+            for (int i = 0; i < means_.size(); i++) {
+                config.mean[i] = means_[i];
             }
-            std::vector<float> normal = XNNConfig::GetInstance()->getNormal();
-            for (int i = 0; i < normal.size(); i++) {
-                config.normal[i] = normal[i];
+            for (int i = 0; i < normals_.size(); i++) {
+                config.normal[i] = normals_[i];
             }
             fprintf(stdout, "src_format=%d, dst_format=%d\n", config.sourceFormat, config.destFormat);
             pretreat_ = MNN::CV::ImageProcess::create(config);
@@ -102,7 +108,7 @@ namespace xnn
             // default float value
             auto output_data_ptr = output_tensor_->host<float>();
             // softmax
-            if (!XNNConfig::GetInstance()->hasSoftmax())
+            if (!has_softmax_)
             {
                 auto input = MNN::Express::_Input({1, num_class_}, MNN::Express::NCHW);
                 auto input_ptr = input->writeMap<float>();

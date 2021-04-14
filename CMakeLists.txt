@@ -10,10 +10,12 @@ APP_EXTRACT_VERSION()
 PROJECT(HelloApp VERSION ${XNN_APP_VERSION} LANGUAGES CXX)
 
 OPTION(BUILD_TESTS "Build with tests" ON)
+OPTION(BUILD_EXAMPLES "Build with examples" ON)
 OPTION(BUILD_BENCHMARKS "Build with benchmarks" ON)
 
 MESSAGE(INFO "--------------------------------")
 MESSAGE(STATUS "Build XNNApp: ${XNN_APP_VERSION}")
+MESSAGE(STATUS "Build with examples: ${BUILD_EXAMPLES}")
 MESSAGE(STATUS "Build with tests: ${BUILD_TESTS}")
 MESSAGE(STATUS "Build with benchmarks: ${BUILD_BENCHMARKS}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
@@ -25,7 +27,7 @@ ENDIF()
 # Set default build to debug
 #--------------------------------------------
 IF(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose Release or Debug" FORCE)
+    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
 ENDIF()
 
 MESSAGE(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
@@ -58,6 +60,11 @@ ADD_SUBDIRECTORY(3rdparty)
 #--------------------------------------------
 MESSAGE(INFO "--------------------------------")
 ADD_SUBDIRECTORY(src)
+
+IF(BUILD_EXAMPLES)
+    MESSAGE(INFO "--------------------------------")
+    ADD_SUBDIRECTORY(examples)
+ENDIF()
 
 IF(BUILD_TESTS)
     MESSAGE(INFO "--------------------------------")

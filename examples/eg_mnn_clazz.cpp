@@ -1,4 +1,4 @@
-#include "config/config.hpp"
+#include "common/common.hpp"
 #include "mnn/mnn_clazz.hpp"
 
 #include <chrono>
@@ -31,14 +31,12 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage: %s [image raw data file]\n", argv[0]);
         return -1;
     }
-    // init config
-    XNNConfig::GetInstance()->parseConfig();
     // get parameters from config.json
-    int num_class = XNNConfig::GetInstance()->getNumClass();
-    std::vector<float> means = XNNConfig::GetInstance()->getMeans();
-    std::vector<float> normals = XNNConfig::GetInstance()->getNormal();
-    std::string model_path = XNNConfig::GetInstance()->getModel();
-    bool has_softmax = XNNConfig::GetInstance()->hasSoftmax();
+    int num_class = 45;
+    std::vector<float> means = {116.28f};
+    std::vector<float> normals = {0.017507f};
+    std::string model_path = "model_new_199_int8.mnn";
+    bool has_softmax = false;
     // init
     xnn::MNNClazz mnn_clazz;
     if (!mnn_clazz.init(num_class, means, normals, model_path, has_softmax)) {
@@ -46,14 +44,14 @@ int main(int argc, char *argv[])
         return -1;
     }
    
-    // run
-    int img_channel = XNNConfig::GetInstance()->getSrcFormat() == XNN_PIX_GRAY ? 1 : 3;
+    // run, 1 is gray image
+    int img_channel = 1;
     XNNImage image;
     image.data = new unsigned char[64 * 64 * img_channel];
     image.width = 64;
     image.height = 64;
-    image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
-    image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
+    image.src_pixel_format = XNN_PIX_GRAY;
+    image.dst_pixel_format = XNN_PIX_GRAY;
     readRawData(argv[1], image.data);
 
     long long average_time = 0;
@@ -85,5 +83,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-

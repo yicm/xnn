@@ -2,7 +2,6 @@
 #include <chrono>
 #include <vector>
 
-// #include <sys/types.h>
 #include <dirent.h>
 
 #include "config/config.hpp"
@@ -93,16 +92,24 @@ int main(int argc, char *argv[])
     }
     // test data set root directory
     const char *image_path = argv[1];
-
-    xnn::MNNClazz mnn_clazz;
+    // init config
+    XNNConfig::GetInstance()->parseConfig();
+    // get parameters from config.json
+    int num_class = XNNConfig::GetInstance()->getNumClass();
+    std::vector<float> means = XNNConfig::GetInstance()->getMeans();
+    std::vector<float> normals = XNNConfig::GetInstance()->getNormal();
+    std::string model_path = XNNConfig::GetInstance()->getModel();
+    bool has_softmax = XNNConfig::GetInstance()->hasSoftmax();
     // init
-    if (!mnn_clazz.init())
+    xnn::MNNClazz mnn_clazz;
+    if (!mnn_clazz.init(num_class, means, normals, model_path, has_softmax))
     {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
     XNNImage image;
-    image.pixel_format = XNNConfig::GetInstance()->getSrcFormat();
+    image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
+    image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
     std::vector<std::pair<int, float>> result;
     // statistics
     long total_num = 0;
@@ -135,7 +142,7 @@ int main(int argc, char *argv[])
                 break;
             }
             #else
-            cv::Mat input_image = cv::imread(clazz_all_files[j], image.pixel_format == XNN_PIX_GRAY ? 0 : 1);
+            cv::Mat input_image = cv::imread(clazz_all_files[j], image.src_pixel_format == XNN_PIX_GRAY ? 0 : 1);
             if (input_image.empty()) {
                 fprintf(stderr, "failed to read image: %s\n", clazz_all_files[j].c_str());
                 break;

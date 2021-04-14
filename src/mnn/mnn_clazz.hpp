@@ -4,6 +4,7 @@
 #include "common/common.hpp"
 
 #include <memory>
+#include <vector>
 
 #include "MNN/ImageProcess.hpp"
 #include "MNN/Interpreter.hpp"
@@ -17,7 +18,11 @@ namespace xnn
     {
 
     public:
-        bool init(std::string model_path = "");
+        bool init(int num_class, 
+                  std::vector<float> &means, 
+                  std::vector<float> &normals,
+                  std::string model_path,
+                  bool has_softmax = false);
 
         XNNStatus run(XNNImage *image, std::vector<std::pair<int, float>>& result, int topk = 5);
 
@@ -36,6 +41,9 @@ namespace xnn
 
         int output_tensor_size = 0;
         int num_class_;
+        std::vector<float> means_;
+        std::vector<float> normals_;
+        bool has_softmax_;
         
     };
 } // namespace xnn

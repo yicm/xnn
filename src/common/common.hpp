@@ -19,7 +19,8 @@ typedef enum XNNPixelFormat {
 // A structure to represent image
 typedef struct XNNImage {
     unsigned char *data;
-    XNNPixelFormat pixel_format;
+    XNNPixelFormat src_pixel_format;
+    XNNPixelFormat dst_pixel_format;
     unsigned int width;
     unsigned int height;
 } XNNImage, *XNNImageDesc;

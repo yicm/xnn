@@ -15,16 +15,24 @@ public:
 
     // getters
     std::string getModel();
+    std::string getParam();
+    std::string getBin();
     int getNumClass();
+    int getInputSize();
     XNNPixelFormat getSrcFormat();
     XNNPixelFormat getDstFormat();
     std::vector<float> getMeans();
     std::vector<float> getNormal();
     bool hasSoftmax();
+    bool isLoadParamBin();
 
 private:
     std::string model_;
+    std::string param_;
     int num_class_;
+    int input_size_;
+    bool load_param_bin_ = true;
+
     XNNPixelFormat src_format_;
     XNNPixelFormat dst_format_;
     std::vector<float> means_;

@@ -37,8 +37,12 @@ bool XNNConfig::parseConfig(std::string filename)
     ifs.close();
     // model
     model_ = app_root_["model"].asString();
+    // param
+    param_ = app_root_["param"].asString();
     // num_class
     num_class_ = app_root_["num_class"].asInt();
+    // input_size
+    input_size_ = app_root_["input_size"].asInt();
     // src_format
     std::string src_format = app_root_["src_format"].asString();
     if (src_format == "RGB")
@@ -80,6 +84,8 @@ bool XNNConfig::parseConfig(std::string filename)
     {
         normal_.push_back(app_root_["normal"][i].asFloat());
     }
+    // load_param_bin
+    load_param_bin_ = app_root_["load_param_bin"].asBool();
     // has_softmax
     has_softmax_ = app_root_["has_softmax"].asBool();
 
@@ -93,9 +99,24 @@ std::string XNNConfig::getModel()
     return model_;
 }
 
+std::string XNNConfig::getParam() 
+{
+    return param_;
+}
+
+std::string XNNConfig::getBin()
+{
+    return model_;
+}
+
 int XNNConfig::getNumClass()
 {
     return num_class_;
+}
+
+int XNNConfig::getInputSize()
+{
+    return input_size_;
 }
 
 XNNPixelFormat XNNConfig::getSrcFormat()
@@ -121,4 +142,9 @@ std::vector<float> XNNConfig::getNormal()
 bool XNNConfig::hasSoftmax()
 {
     return has_softmax_;
+}
+
+bool XNNConfig::isLoadParamBin()
+{
+    return load_param_bin_;
 }

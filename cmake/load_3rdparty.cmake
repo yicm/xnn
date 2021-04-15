@@ -60,6 +60,27 @@ MACRO(LOAD_LIBMNN os arch)
     ENDIF()
 ENDMACRO()
 
+MACRO(LOAD_LIBNCNN os arch)
+    SET(3RDPARTY_DIR ${PROJECT_SOURCE_DIR}/3rdparty/target/${${os}}_${${arch}})
+    MESSAGE(STATUS "3RDPARTY_DIR: ${3RDPARTY_DIR}")
+    FIND_FILE(NCNN_INCLUDE_DIR include ${3RDPARTY_DIR} NO_DEFAULT_PATH)
+    FIND_FILE(NCNN_LIBRARY_DIR lib ${3RDPARTY_DIR} NO_DEFAULT_PATH)
+
+    SET(NCNN_LIBS
+        ncnn
+        pthread
+        #PARENT_SCOPE no parent
+    )
+    IF(NCNN_INCLUDE_DIR)
+        SET(NCNN_LIBRARY_DIR "${NCNN_LIBRARY_DIR}/ncnn")
+        MESSAGE(STATUS "NCNN_INCLUDE_DIR : ${NCNN_INCLUDE_DIR}")
+        MESSAGE(STATUS "NCNN_LIBRARY_DIR : ${NCNN_LIBRARY_DIR}")
+        MESSAGE(STATUS "NCNN_LIBS : ${NCNN_LIBS}")
+    ELSE()
+        MESSAGE(FATAL_ERROR "NCNN_LIBS not found!")
+    ENDIF()
+ENDMACRO()
+
 MACRO(LOAD_JSONCPP os arch)
     SET(3RDPARTY_DIR ${PROJECT_SOURCE_DIR}/3rdparty/target/${${os}}_${${arch}})
     MESSAGE(STATUS "3RDPARTY_DIR: ${3RDPARTY_DIR}")
@@ -84,5 +105,6 @@ MACRO(LOAD_3RDPARTY os arch)
     LOAD_HEADER_ONLY()
     LOAD_LIBSPDLOG(${os} ${arch})
     LOAD_LIBMNN(${os} ${arch})
+    LOAD_LIBNCNN(${os} ${arch})
     LOAD_JSONCPP(${os} ${arch})
 ENDMACRO()

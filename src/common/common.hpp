@@ -2,6 +2,7 @@
 #define _XNN_COMMON_COMMON_HPP_
 
 #include "MNN/ImageProcess.hpp"
+#include "ncnn/net.h"
 
 // A enum to represent pixel format
 typedef enum XNNPixelFormat {
@@ -39,6 +40,8 @@ typedef enum XNNStatus {
 } XNNStatus;
 
 MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format);
+
+ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format);
 
 #endif
 

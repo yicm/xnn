@@ -25,6 +25,7 @@ ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(logger)
 ADD_SUBDIRECTORY(config)
 ADD_SUBDIRECTORY(mnn)
+ADD_SUBDIRECTORY(ncnn)
 
 # main app
 SET(SRC_LIST ./main/main.cpp)

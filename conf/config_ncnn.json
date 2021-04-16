@@ -1,0 +1,16 @@
+{
+    "model": "model_199.bin",
+    "param": "model_199.param.bin",
+    "load_param_bin": true,
+    "num_class": 45,
+    "input_size": 64,
+    "src_format":"GRAY",
+    "dst_format":"GRAY",
+    "mean":[
+        116.28
+    ],
+    "normal":[
+        0.017507
+    ],
+    "has_softmax":false
+}

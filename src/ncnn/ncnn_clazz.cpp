@@ -5,6 +5,50 @@
 
 namespace xnn
 {
+    void NCNNClazz::getNetInputName()
+    {
+        for (size_t i = 0; i < layers_.size(); i++)
+        {
+            const ncnn::Layer *layer = layers_[i];
+            if (layer->type == "Input" && !load_param_bin_)
+            {
+                for (size_t j = 0; j < layer->tops.size(); j++)
+                {
+                    int blob_index = layer->tops[j];
+                    std::string name = blobs_[blob_index].name;
+                    input_layer_name_ = name;
+                }
+            }
+            else if (load_param_bin_)
+            {
+                input_layer_name_ = std::to_string(0);
+                break;
+            }
+        }
+    }
+
+    void NCNNClazz::getNetOutputName()
+    {
+        for (size_t i = 0; i < layers_.size(); i++)
+        {
+            const ncnn::Layer *layer = layers_[i];
+            for (size_t j = 0; j < layer->bottoms.size(); j++)
+            {
+                int blob_index = layer->bottoms[j];
+                std::string name = blobs_[blob_index + 1].name;
+                if (!load_param_bin_ && layer->type == "InnerProduct")
+                {
+                    output_layer_name_ = name;
+                }
+                else if (load_param_bin_)
+                {
+                    output_layer_name_ = std::to_string(blobs_.size() - 1);
+                    break;
+                }
+            }
+        }
+    }
+
     bool NCNNClazz::init(int num_class,
                          std::vector<float> &means,
                          std::vector<float> &normals,
@@ -30,13 +74,18 @@ namespace xnn
         normals_ = normals;
         // setting has_softmax
         has_softmax_ = has_softmax;
+        // is param file binary file?
+        load_param_bin_ = load_param_bin;
         // create interpreter from mnn file
         if (param_path.size() != 0 && bin_path.size() != 0)
         {
             net_.opt.use_vulkan_compute = false;
-            if (load_param_bin) {
+            if (load_param_bin)
+            {
                 net_.load_param_bin(param_path.c_str());
-            } else {
+            }
+            else
+            {
                 net_.load_param(param_path.c_str());
             }
             net_.load_model(bin_path.c_str());
@@ -51,7 +100,12 @@ namespace xnn
         {
             softmax_ = ncnn::create_layer("Softmax");
         }
+        // get input name and output name of net
+        blobs_ = net_.mutable_blobs();
+        layers_ = net_.layers();
 
+        getNetInputName();
+        getNetOutputName();
         return true;
     }
 
@@ -80,14 +134,23 @@ namespace xnn
             const float norm_vals[3] = {normals_[0], normals_[1], normals_[2]};
             in.substract_mean_normalize(mean_vals, norm_vals);
         }
-        else {
+        else
+        {
             fprintf(stderr, "Means error\n");
             return XNN_PARAM_ERROR;
         }
         ncnn::Extractor extractor = net_.create_extractor();
-        extractor.input(0, in);
         ncnn::Mat out;
-        extractor.extract(160, out);
+        if (load_param_bin_)
+        {
+            extractor.input(atoi(input_layer_name_.c_str()), in);
+            extractor.extract(atoi(output_layer_name_.c_str()), out);
+        }
+        else
+        {
+            extractor.input(input_layer_name_.c_str(), in);
+            extractor.extract(output_layer_name_.c_str(), out);
+        }
         // manually call softmax on the fc output
         if (!has_softmax_)
         {

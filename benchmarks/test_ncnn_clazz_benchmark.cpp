@@ -5,7 +5,7 @@
 #include <dirent.h>
 
 #include "config/config.hpp"
-#include "mnn/mnn_clazz.hpp"
+#include "ncnn/ncnn_clazz.hpp"
 
 #ifdef USE_STB
 #define STB_IMAGE_IMPLEMENTATION
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        fprintf(stderr, "Usage: %s [Test data set root directory]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [Test dataset root directory]\n", argv[0]);
         return -1;
     }
     // test data set root directory
@@ -98,12 +98,14 @@ int main(int argc, char *argv[])
     int num_class = XNNConfig::GetInstance()->getNumClass();
     std::vector<float> means = XNNConfig::GetInstance()->getMeans();
     std::vector<float> normals = XNNConfig::GetInstance()->getNormal();
-    std::string model_path = XNNConfig::GetInstance()->getModel();
+    std::string bin_path = XNNConfig::GetInstance()->getBin();
+    std::string param_path = XNNConfig::GetInstance()->getParam();
     bool has_softmax = XNNConfig::GetInstance()->hasSoftmax();
+    bool is_load_param_bin = XNNConfig::GetInstance()->isLoadParamBin();
+    int input_size = XNNConfig::GetInstance()->getInputSize();
     // init
-    xnn::MNNClazz mnn_clazz;
-    if (!mnn_clazz.init(num_class, means, normals, model_path, has_softmax))
-    {
+    xnn::NCNNClazz ncnn_clazz;
+    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, is_load_param_bin, has_softmax)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
             image.height = h;
             // run classfication
             //saveImgRawData(clazz, image.data, w, h ,channel);
-            mnn_clazz.run(&image, result, TOPK);
+            ncnn_clazz.run(&image, result, TOPK);
             #ifdef USE_STB
             stbi_image_free(input_image);
             #endif
@@ -193,7 +195,7 @@ int main(int argc, char *argv[])
             (float)correct_num / (float)total_num, (float)error_num / (float)total_num);
 
     // release
-    mnn_clazz.release();
+    ncnn_clazz.release();
 
     return 0;
 }

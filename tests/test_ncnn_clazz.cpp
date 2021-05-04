@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
     int input_size = XNNConfig::GetInstance()->getInputSize();
     // init
     xnn::NCNNClazz ncnn_clazz;
-    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, is_load_param_bin, has_softmax)) {
+    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, input_size, is_load_param_bin, has_softmax)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
-   
+
     // run
     int img_channel = XNNConfig::GetInstance()->getSrcFormat() == XNN_PIX_GRAY ? 1 : 3;
     XNNImage image;

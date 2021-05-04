@@ -1,5 +1,5 @@
 #include "common/common.hpp"
-#include "mnn/mnn_clazz.hpp"
+#include "ncnn/ncnn_clazz.hpp"
 
 #include <chrono>
 
@@ -33,17 +33,20 @@ int main(int argc, char *argv[])
     }
     // get parameters from config.json
     int num_class = 45;
-    std::vector<float> means = {116.28f};
+    std::vector<float> means ={116.28f};
     std::vector<float> normals = {0.017507f};
-    std::string model_path = "model_new_199_int8.mnn";
+    std::string bin_path = "model_199-int8.bin";
+    std::string param_path = "model_199-int8.param.bin";
     bool has_softmax = false;
-    // init
-    xnn::MNNClazz mnn_clazz;
-    if (!mnn_clazz.init(num_class, means, normals, model_path, has_softmax)) {
+    bool is_load_param_bin = true;
+    int input_size = 64;
+     // init
+    xnn::NCNNClazz ncnn_clazz;
+    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, is_load_param_bin, has_softmax)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
-   
+
     // run, 1 is gray image
     int img_channel = 1;
     XNNImage image;
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
         // start timing
         auto start = std::chrono::system_clock::now();
         // run classfication
-        mnn_clazz.run(&image, result, TOPK);
+        ncnn_clazz.run(&image, result, TOPK);
 
         // print result
         for (int i = 0; i < TOPK; ++i) {
@@ -79,7 +82,7 @@ int main(int argc, char *argv[])
     // release
     delete []image.data;
     image.data = nullptr;
-    mnn_clazz.release();
+    ncnn_clazz.release();
 
     return 0;
 }

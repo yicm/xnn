@@ -1,7 +1,10 @@
 #ifndef _XNN_COMMON_COMMON_HPP_
 #define _XNN_COMMON_COMMON_HPP_
 
+#ifdef BUILD_WITH_MNN
 #include "MNN/ImageProcess.hpp"
+#endif
+
 #include "ncnn/net.h"
 
 // A enum to represent pixel format
@@ -28,7 +31,7 @@ typedef struct XNNImage {
 
 // A enum to represent running status
 typedef enum XNNStatus {
-    XNN_SUCCESS  = 0, 
+    XNN_SUCCESS  = 0,
     XNN_PARAM_ERROR = -1,
     XNN_INVALID_HANDLE = -2,
     XNN_INVALID_PIXEL_FORMAT = -3,
@@ -39,7 +42,9 @@ typedef enum XNNStatus {
     XNN_INVALID_CONFIG_PARAM = -8,
 } XNNStatus;
 
+#ifdef BUILD_WITH_MNN
 MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format);
+#endif
 
 ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format);
 

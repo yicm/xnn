@@ -7,6 +7,11 @@ namespace xnn
 {
     void NCNNClazz::getNetInputName()
     {
+        if (load_param_bin_)
+        {
+            input_layer_name_ = std::to_string(0);
+            return;
+        }
         for (size_t i = 0; i < layers_.size(); i++)
         {
             const ncnn::Layer *layer = layers_[i];
@@ -19,16 +24,16 @@ namespace xnn
                     input_layer_name_ = name;
                 }
             }
-            else if (load_param_bin_)
-            {
-                input_layer_name_ = std::to_string(0);
-                break;
-            }
         }
     }
 
     void NCNNClazz::getNetOutputName()
     {
+        if (load_param_bin_)
+        {
+            output_layer_name_ = std::to_string(blobs_.size() - 1);
+            return;
+        }
         for (size_t i = 0; i < layers_.size(); i++)
         {
             const ncnn::Layer *layer = layers_[i];
@@ -40,11 +45,6 @@ namespace xnn
                 {
                     output_layer_name_ = name;
                 }
-                else if (load_param_bin_)
-                {
-                    output_layer_name_ = std::to_string(blobs_.size() - 1);
-                    break;
-                }
             }
         }
     }
@@ -54,6 +54,7 @@ namespace xnn
                          std::vector<float> &normals,
                          std::string param_path,
                          std::string bin_path,
+                         int input_size,
                          bool load_param_bin,
                          bool has_softmax)
     {
@@ -69,6 +70,7 @@ namespace xnn
         }
         // get class number
         num_class_ = num_class;
+        input_size_ = input_size;
         // get means and normals
         means_ = means;
         normals_ = normals;
@@ -111,7 +113,7 @@ namespace xnn
 
     XNNStatus NCNNClazz::run(XNNImage *image, std::vector<std::pair<int, float>> &result, int topk)
     {
-        if (!image || !image->data)
+        if (!image || !image->data || image->width <= 0 || image->height <= 0)
         {
             fprintf(stderr, "Input parameter error\n");
             return XNN_PARAM_ERROR;
@@ -120,8 +122,11 @@ namespace xnn
         result.clear();
 
         ncnn::Mat in;
-        in = ncnn::Mat::from_pixels_resize(image->data, convertXNNPixFormat2NCNN(image->src_pixel_format), image->width, image->height, 64, 64);
-
+        if (image->width == input_size_ && image->height == input_size_) {
+            in = ncnn::Mat::from_pixels(image->data, convertXNNPixFormat2NCNN(image->src_pixel_format), input_size_, input_size_);
+        } else {
+            in = ncnn::Mat::from_pixels_resize(image->data, convertXNNPixFormat2NCNN(image->src_pixel_format), image->width, image->height, input_size_, input_size_);
+        }
         if (means_.size() == 1)
         {
             const float mean_vals[1] = {means_[0]};
@@ -169,7 +174,7 @@ namespace xnn
                   [](std::pair<int, float> a, std::pair<int, float> b) { return a.second > b.second; });
         for (int i = 0; i < topk; ++i)
         {
-            // the first is class index, the seconde is score
+            // the first is class index, the second is score
             result.push_back(std::make_pair(sorted_result[i].first, sorted_result[i].second));
         }
         return XNN_SUCCESS;

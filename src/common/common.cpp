@@ -1,6 +1,7 @@
 #include "common/common.hpp"
 
-MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format) 
+#ifdef BUILD_WITH_MNN
+MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format)
 {
     switch (format)
     {
@@ -9,7 +10,7 @@ MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format)
 
         case XNN_PIX_RGB:
             return MNN::CV::RGB;
-            
+
         case XNN_PIX_BGR:
             return MNN::CV::BGR;
 
@@ -27,6 +28,7 @@ MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format)
             return MNN::CV::GRAY;
     }
 }
+#endif
 
 ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
 {
@@ -37,7 +39,7 @@ ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
 
         case XNN_PIX_RGB:
             return ncnn::Mat::PIXEL_RGB;
-            
+
         case XNN_PIX_BGR:
             return ncnn::Mat::PIXEL_BGR;
 
@@ -46,9 +48,9 @@ ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
 
         case XNN_PIX_BGRA:
             return ncnn::Mat::PIXEL_BGRA;
-            
+
         default:
             fprintf(stderr, "Do not support the XNNPixelFormat: %d\n", format);
             return ncnn::Mat::PIXEL_GRAY;
-    }    
+    }
 }

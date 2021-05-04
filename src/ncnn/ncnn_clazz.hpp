@@ -22,6 +22,7 @@ namespace xnn
                   std::vector<float> &normals,
                   std::string param_path,
                   std::string bin_path,
+                  int input_size,
                   bool load_param_bin = true,
                   bool has_softmax = false);
 
@@ -41,6 +42,7 @@ namespace xnn
         std::string output_layer_name_;
 
         int num_class_;
+        int input_size_;
         std::vector<float> means_;
         std::vector<float> normals_;
         bool has_softmax_;

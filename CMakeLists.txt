@@ -12,12 +12,16 @@ PROJECT(HelloApp VERSION ${XNN_APP_VERSION} LANGUAGES CXX)
 OPTION(BUILD_TESTS "Build with tests" ON)
 OPTION(BUILD_EXAMPLES "Build with examples" ON)
 OPTION(BUILD_BENCHMARKS "Build with benchmarks" ON)
+OPTION(BUILD_NN_MODULES_ONLY "Only build nn modules" OFF)
+OPTION(BUILD_WITH_MNN "Build with MNN" ON)
 
 MESSAGE(INFO "--------------------------------")
 MESSAGE(STATUS "Build XNNApp: ${XNN_APP_VERSION}")
 MESSAGE(STATUS "Build with examples: ${BUILD_EXAMPLES}")
 MESSAGE(STATUS "Build with tests: ${BUILD_TESTS}")
 MESSAGE(STATUS "Build with benchmarks: ${BUILD_BENCHMARKS}")
+MESSAGE(STATUS "Only build with nn moudles: ${BUILD_NN_MODULES_ONLY}")
+MESSAGE(STATUS "Build with mnn: ${BUILD_WITH_MNN}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 IF (NOT CMAKE_TOOLCHAIN_FILE)
     MESSAGE(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
@@ -49,6 +53,9 @@ MESSAGE(STATUS "Your target arch : ${YOUR_TARGET_ARCH}")
 
 LOAD_3RDPARTY(YOUR_TARGET_OS YOUR_TARGET_ARCH)
 
+IF(BUILD_WITH_MNN)
+    ADD_DEFINITIONS("-DBUILD_WITH_MNN")
+ENDIF()
 #--------------------------------------------
 # Build 3rdparty
 #--------------------------------------------

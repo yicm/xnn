@@ -7,6 +7,7 @@
 #include "config/config.hpp"
 #include "ncnn/ncnn_clazz.hpp"
 
+#define USE_STB
 #ifdef USE_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -33,7 +34,7 @@ void readRawData(const char *filename, unsigned char *data)
     long file_size = ftell(fp);
     rewind(fp);
     // read data
-    fread(data, sizeof(char), file_size, fp);
+    size_t size = fread(data, sizeof(char), file_size, fp);
     fclose(fp);
     fp = NULL;
 }
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
     int input_size = XNNConfig::GetInstance()->getInputSize();
     // init
     xnn::NCNNClazz ncnn_clazz;
-    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, is_load_param_bin, has_softmax)) {
+    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, input_size, is_load_param_bin, has_softmax)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
@@ -135,9 +136,10 @@ int main(int argc, char *argv[])
             // start timing
             auto start = std::chrono::system_clock::now();
             // read image
+            int desired_channels = 0;
             int h, w, channel;
             #ifdef USE_STB
-            auto input_image = stbi_load(clazz_all_files[j].c_str(), &w, &h, &channel, 3);
+            auto input_image = stbi_load(clazz_all_files[j].c_str(), &w, &h, &channel, desired_channels);
             if (!input_image)
             {
                 fprintf(stderr, "failed to read image: %s\n", clazz_all_files[j].c_str());
@@ -171,7 +173,7 @@ int main(int argc, char *argv[])
             // print and count result
             const int TOP1_INDEX = 0;
             fprintf(stdout, "result[%d] =  [class=%d, socre=%f]\n", TOP1_INDEX, result[TOP1_INDEX].first, result[TOP1_INDEX].second);
-            if (result[0].first == clazz)
+            if (result[TOP1_INDEX].first == clazz)
             {
                 correct_num++;
             }

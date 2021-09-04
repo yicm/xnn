@@ -1,7 +1,18 @@
 #include "config/config.hpp"
 #include "ncnn/ncnn_clazz.hpp"
 
+#include <iostream>
 #include <chrono>
+
+#define USE_STB
+#ifdef USE_STB
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+#include "stb/stb_image_write.h"
+#else
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#endif
 
 #define TOPK 5
 #define LOOP 10
@@ -20,9 +31,56 @@ void readRawData(const char *filename, unsigned char *data) {
     long file_size = ftell(fp);
     rewind(fp);
     // read data
-    fread(data, sizeof(char), file_size, fp);
+    size_t size = fread(data, sizeof(char), file_size, fp);
     fclose(fp);
     fp = NULL;
+}
+
+
+void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int c) {
+    char data[128] = "";
+    sprintf(data, "%s.raw_%d_%d_%d", filename, w, h, c);
+    FILE *fp = fopen(data, "wb");
+    fwrite(raw, 1, w * h * c, fp);
+    fclose(fp);
+}
+
+int readImgData(const char *filename, XNNImage &image) {
+    // read image
+    int h, w, channel;
+    int desired_channels = 0;
+    #ifdef USE_STB
+    auto input_image = stbi_load(filename, &w, &h, &channel, desired_channels);
+    if (!input_image)
+    {
+        fprintf(stderr, "failed to read image: %s\n", filename);
+        return -1;
+    }
+    #else
+    cv::Mat input_image = cv::imread(filename, image.src_pixel_format == XNN_PIX_GRAY ? 0 : 1);
+    if (input_image.empty()) {
+        fprintf(stderr, "failed to read image: %s\n", filename);
+        return -1;
+    }
+    h = input_image.rows;
+    w = input_image.cols;
+    channel = input_image.channels();
+    #endif
+    std::cout << "===" << filename << ", w=" << w << ", h=" << h << ", c=" << channel << std::endl;
+    #ifndef USE_STB
+    image.data = (uint8_t *)input_image.data;
+    #else
+    image.data = (uint8_t *)input_image;
+    #endif
+    image.width = w;
+    image.height = h;
+    saveImgRawData(filename, image.data, w, h, channel);
+
+    #ifdef USE_STB
+    // Note:
+    // stbi_image_free(input_image);
+    #endif
+    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -52,12 +110,10 @@ int main(int argc, char *argv[])
     // run
     int img_channel = XNNConfig::GetInstance()->getSrcFormat() == XNN_PIX_GRAY ? 1 : 3;
     XNNImage image;
-    image.data = new unsigned char[input_size * input_size * img_channel];
-    image.width = input_size;
-    image.height = input_size;
     image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
     image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
-    readRawData(argv[1], image.data);
+    //readRawData(argv[1], image.data);
+    readImgData(argv[1], image);
 
     long long average_time = 0;
     std::vector<std::pair<int, float>> result;

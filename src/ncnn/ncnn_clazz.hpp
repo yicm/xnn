@@ -1,5 +1,5 @@
-#ifndef _XNN_MNN_MNN_CLAZZ_HPP_
-#define _XNN_MNN_MNN_CLAZZ_HPP_
+#ifndef _XNN_NCNN_NCNN_CLAZZ_HPP_
+#define _XNN_NCNN_NCNN_CLAZZ_HPP_
 
 #include "common/common.hpp"
 

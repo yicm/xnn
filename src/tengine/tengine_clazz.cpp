@@ -1,71 +1,26 @@
-#include "ncnn/ncnn_clazz.hpp"
+#include "tengine/tengine_clazz.hpp"
 
 #include <iostream>
 #include <memory>
 
 namespace xnn
 {
-    void NCNNClazz::getNetInputName()
-    {
-        if (load_param_bin_)
-        {
-            input_layer_name_ = std::to_string(0);
-            return;
-        }
-        for (size_t i = 0; i < layers_.size(); i++)
-        {
-            const ncnn::Layer *layer = layers_[i];
-            if (layer->type == "Input" && !load_param_bin_)
-            {
-                for (size_t j = 0; j < layer->tops.size(); j++)
-                {
-                    int blob_index = layer->tops[j];
-                    std::string name = blobs_[blob_index].name;
-                    input_layer_name_ = name;
-                }
-            }
-        }
-    }
-
-    void NCNNClazz::getNetOutputName()
-    {
-        if (load_param_bin_)
-        {
-            output_layer_name_ = std::to_string(blobs_.size() - 1);
-            return;
-        }
-        for (size_t i = 0; i < layers_.size(); i++)
-        {
-            const ncnn::Layer *layer = layers_[i];
-            for (size_t j = 0; j < layer->bottoms.size(); j++)
-            {
-                int blob_index = layer->bottoms[j];
-                std::string name = blobs_[blob_index + 1].name;
-                if (!load_param_bin_ && layer->type == "InnerProduct")
-                {
-                    output_layer_name_ = name;
-                }
-            }
-        }
-    }
-
     bool NCNNClazz::init(int num_class,
-                         std::vector<float> &means,
-                         std::vector<float> &normals,
-                         std::string param_path,
-                         std::string bin_path,
-                         int input_size,
-                         bool load_param_bin,
-                         bool has_softmax)
+                  std::vector<float> &means,
+                  std::vector<float> &scales,
+                  std::string model_file,
+                  int input_size,
+                  int tengine_mode = TENGINE_MODE_FP32,
+                  bool has_softmax = false)
     {
         if (num_class <= 0)
         {
             fprintf(stderr, "Parameter error: invalid number(%d) of class\n", num_class);
             return false;
         }
-        if (means.size() <= 0 || normals.size() <= 0)
+        if (means.size() <= 0 || scales.size() <= 0)
         {
-            fprintf(stderr, "Parameter error: the size of MEANs or NORMALs is 0\n");
+            fprintf(stderr, "Parameter error: the size of MEANs or SCALEs is 0\n");
             return false;
         }
         // get class number
@@ -73,41 +28,52 @@ namespace xnn
         input_size_ = input_size;
         // get means and normals
         means_ = means;
-        normals_ = normals;
+        scales = normals;
         // setting has_softmax
         has_softmax_ = has_softmax;
-        // is param file binary file?
-        load_param_bin_ = load_param_bin;
-        // create interpreter from param/bin file
-        if (param_path.size() != 0 && bin_path.size() != 0)
-        {
-            net_.opt.use_vulkan_compute = false;
-            if (load_param_bin)
-            {
-                net_.load_param_bin(param_path.c_str());
-            }
-            else
-            {
-                net_.load_param(param_path.c_str());
-            }
-            net_.load_model(bin_path.c_str());
+        // set runtime options
+        struct options opt;
+        opt.num_thread = 1;
+        opt.cluster = TENGINE_CLUSTER_ALL;
+        opt.precision = tengine_mode;
+        if (tengine_model == TENGINE_MODE_INT8) {
+            opt.affinity = 0;
+        } else if (tengine_model == TENGINE_MODE_FP32) {
+            opt.affinity = 255;
         }
-        else
+        // inital tengine
+        if (init_tengine() != 0)
         {
-            fprintf(stderr, "Parameter error: param or bin file can not be empty.\n");
+            fprintf(stderr, "Initial tengine failed.\n");
             return false;
+        }
+        fprintf(stderr, "tengine-lite library version: %s\n", get_tengine_version());
+
+        // create graph, load tengine model xxx.tmfile
+        graph_ = create_graph(NULL, "tengine", model_file.c_str());
+        if (NULL == graph_)
+        {
+            fprintf(stderr, "Create graph failed.\n");
+            return false;
+        }
+        input_tensor_ = get_graph_input_tensor(graph, 0, 0);
+        if (input_tensor_ == NULL)
+        {
+            fprintf(stderr, "Get input tensor failed\n");
+            return false;
+        }
+        // nchw
+        int dims[] = {1, means_.size(), input_size, input_size};
+        if (set_tensor_shape(input_tensor_, dims, 4) < 0)
+        {
+            fprintf(stderr, "Set input tensor shape failed\n");
+            return -1;
         }
         // create softmax layer
         if (!has_softmax_)
         {
-            softmax_ = ncnn::create_layer("Softmax");
+            // todo
         }
-        // get input name and output name of net
-        blobs_ = net_.mutable_blobs();
-        layers_ = net_.layers();
-
-        getNetInputName();
-        getNetOutputName();
         return true;
     }
 

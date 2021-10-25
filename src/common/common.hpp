@@ -40,6 +40,7 @@ typedef enum XNNStatus {
     XNN_OPENDIR_FAILED = -6,
     XNN_OPEN_FILE_FAILED = -7,
     XNN_INVALID_CONFIG_PARAM = -8,
+    XNN_RUN_ERROR = -9
 } XNNStatus;
 
 #ifdef BUILD_WITH_MNN
@@ -47,6 +48,8 @@ MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format);
 #endif
 
 ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format);
+
+float* softmax(float* arr, const int len);
 
 #endif
 

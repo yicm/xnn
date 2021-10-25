@@ -31,6 +31,7 @@ IF(BUILD_WITH_MNN)
     ADD_SUBDIRECTORY(mnn)
 ENDIF()
 ADD_SUBDIRECTORY(ncnn)
+ADD_SUBDIRECTORY(tengine)
 
 # build main app
 

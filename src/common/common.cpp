@@ -1,5 +1,7 @@
 #include "common/common.hpp"
 
+#include <math.h>
+
 #ifdef BUILD_WITH_MNN
 MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format)
 {
@@ -53,4 +55,19 @@ ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
             fprintf(stderr, "Do not support the XNNPixelFormat: %d\n", format);
             return ncnn::Mat::PIXEL_GRAY;
     }
+}
+
+float* softmax(float* arr, const int len) {
+    float softmax_denominator = 0;
+
+    for (int i = 0; i < len; i++) {
+         softmax_denominator += exp(arr[i]);
+    }
+
+    for (int i = 0; i < len; i++) {
+        float computed_value = exp(arr[i]) / softmax_denominator;
+        arr[i] = computed_value;
+    }
+
+    return 0;
 }

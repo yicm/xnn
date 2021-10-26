@@ -70,17 +70,17 @@ namespace xnn
         }
         // input setting
         tengine_mode_ = tengine_mode;
-        if (tengine_mode == TENGINE_MODE_INT8) {
+        if (tengine_mode == TENGINE_MODE_FP32) {
             input_float32_data_ = (float*)malloc(img_size * sizeof(float));
             if (input_float32_data_ == NULL) {
                 return -1;
             }
             if (set_tensor_buffer(input_tensor_, input_float32_data_, img_size * sizeof(float)) < 0) {
-                fprintf(stderr, "Set input tensor buffer failed\n");
+                fprintf(stderr, "Set input tensor buffer failed, image size = %d\n", img_size);
                 return -1;
             }
             opt.affinity = 0;
-        } else if (tengine_mode == TENGINE_MODE_FP32) {
+        } else if (tengine_mode == TENGINE_MODE_INT8) {
             input_int8_data_ = (int8_t*)malloc(img_size);
             if (input_int8_data_ == NULL) {
                 return -1;

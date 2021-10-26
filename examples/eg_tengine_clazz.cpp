@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
     std::vector<float> normals = {0.017507f};
     std::string model_path = "model_float.tf";
     bool has_softmax = false;
-    bool is_load_param_bin = true;
     int input_size = 64;
      // init
     xnn::TengineClazz tengine_clazz;

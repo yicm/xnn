@@ -35,6 +35,7 @@ namespace xnn
 
         void release();
 
+    private:
         Image makeImage(int w, int h, int c);
 
         Image makeEmptyImage(int w, int h, int c);

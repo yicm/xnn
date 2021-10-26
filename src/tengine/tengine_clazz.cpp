@@ -130,8 +130,9 @@ namespace xnn
         int output_size = get_tensor_buffer_size(output_tensor) / sizeof(float);
 
         // manually call softmax on the fc output
-        if (!has_softmax_) {
-            // out
+        if (!has_softmax_)
+        {
+            softmax(output_data, output_size);
         }
         // get sorted result
         std::vector<std::pair<int, float>> sorted_result(output_size);

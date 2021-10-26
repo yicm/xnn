@@ -49,7 +49,7 @@ MNN::CV::ImageFormat convertXNNPixFormat2MNN(XNNPixelFormat format);
 
 ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format);
 
-float* softmax(float* arr, const int len);
+void softmax(float* arr, const int len);
 
 #endif
 

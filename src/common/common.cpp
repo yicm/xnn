@@ -57,7 +57,7 @@ ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
     }
 }
 
-float* softmax(float* arr, const int len) {
+void softmax(float* arr, const int len) {
     float softmax_denominator = 0;
 
     for (int i = 0; i < len; i++) {
@@ -68,6 +68,4 @@ float* softmax(float* arr, const int len) {
         float computed_value = exp(arr[i]) / softmax_denominator;
         arr[i] = computed_value;
     }
-
-    return 0;
 }

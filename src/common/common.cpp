@@ -51,6 +51,12 @@ ncnn::Mat::PixelType convertXNNPixFormat2NCNN(XNNPixelFormat format)
         case XNN_PIX_BGRA:
             return ncnn::Mat::PIXEL_BGRA;
 
+        case XNN_PIX_RGB2GRAY:
+            return ncnn::Mat::PIXEL_RGB2GRAY;
+
+        case XNN_PIX_BGR2GRAY:
+            return ncnn::Mat::PIXEL_BGR2GRAY;
+
         default:
             fprintf(stderr, "Do not support the XNNPixelFormat: %d\n", format);
             return ncnn::Mat::PIXEL_GRAY;

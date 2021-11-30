@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     //readRawData(argv[1], image.data);
     readImgData(argv[1], image);
 
-    long long average_time = 0;
+    long long average_tim = 0;
     std::vector<std::pair<int, float>> result;
     for (int i = 0; i < LOOP; i++) {
         // start timing

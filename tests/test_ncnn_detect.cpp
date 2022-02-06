@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
     XNNConfig::GetInstance()->parseConfig();
     // get parameters from config.json
     int num_class = XNNConfig::GetInstance()->getNumClass();
-    std::vector<float> means = XNNConfig::GetInstance()->getMeans();
-    std::vector<float> normals = XNNConfig::GetInstance()->getNormal();
+    std::vector<float> means;
+    std::vector<float> normals;
     std::string bin_path = XNNConfig::GetInstance()->getBin();
     std::string param_path = XNNConfig::GetInstance()->getParam();
     bool is_load_param_bin = XNNConfig::GetInstance()->isLoadParamBin();

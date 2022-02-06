@@ -22,6 +22,7 @@ typedef enum XNNPixelFormat {
     XNN_PIX_INVALID,
     XNN_PIX_RGB2GRAY,
     XNN_PIX_BGR2GRAY,
+    XNN_PIX_BGR2RGB,
 } XNNPixelFormat;
 
 // A structure to represent image

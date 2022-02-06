@@ -48,7 +48,8 @@ void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int 
 int readImgData(const char *filename, XNNImage &image) {
     // read image
     int h, w, channel;
-    int desired_channels = 0;
+    // read image with channel 1
+    int desired_channels = 1;
     #ifdef USE_STB
     auto input_image = stbi_load(filename, &w, &h, &channel, desired_channels);
     if (!input_image)

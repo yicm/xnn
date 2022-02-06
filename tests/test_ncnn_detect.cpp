@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
         ncnn_detect.run(&image, result, TOPK);
 
         // print result
-        for (int i = 0; i < TOPK; ++i) {
+        for (int i = 0; i < result.size(); ++i) {
             fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
         }
         fprintf(stdout, "--------------------------\n");

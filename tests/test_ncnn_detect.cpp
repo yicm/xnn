@@ -1,5 +1,5 @@
 #include "config/config.hpp"
-#include "ncnn/ncnn_clazz.hpp"
+#include "ncnn/ncnn_detect.hpp"
 
 #include <iostream>
 #include <chrono>
@@ -98,12 +98,11 @@ int main(int argc, char *argv[])
     std::vector<float> normals = XNNConfig::GetInstance()->getNormal();
     std::string bin_path = XNNConfig::GetInstance()->getBin();
     std::string param_path = XNNConfig::GetInstance()->getParam();
-    bool has_softmax = XNNConfig::GetInstance()->hasSoftmax();
     bool is_load_param_bin = XNNConfig::GetInstance()->isLoadParamBin();
-    int input_size = XNNConfig::GetInstance()->getInputSize();
+    int target_size = XNNConfig::GetInstance()->getInputSize();
     // init
-    xnn::NCNNClazz ncnn_clazz;
-    if (!ncnn_clazz.init(num_class, means, normals, param_path, bin_path, input_size, is_load_param_bin, has_softmax)) {
+    xnn::NCNNDetect ncnn_detect;
+    if (!ncnn_detect.init(num_class, means, normals, param_path, bin_path, target_size, is_load_param_bin)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
@@ -117,16 +116,16 @@ int main(int argc, char *argv[])
     readImgData(argv[1], image);
 
     long long average_time = 0;
-    std::vector<std::pair<int, float>> result;
+    std::vector<DetectObject> result;
     for (int i = 0; i < LOOP; i++) {
         // start timing
         auto start = std::chrono::system_clock::now();
         // run classfication
-        ncnn_clazz.run(&image, result, TOPK);
+        ncnn_detect.run(&image, result, TOPK);
 
         // print result
         for (int i = 0; i < TOPK; ++i) {
-            fprintf(stdout, "result[%d] =  [class=%d, socre=%f]\n", i, result[i].first, result[i].second);
+            fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
         }
         fprintf(stdout, "--------------------------\n");
         // abort timer
@@ -141,7 +140,7 @@ int main(int argc, char *argv[])
     // release
     delete []image.data;
     image.data = nullptr;
-    ncnn_clazz.release();
+    ncnn_detect.release();
 
     return 0;
 }

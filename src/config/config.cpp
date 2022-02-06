@@ -56,6 +56,12 @@ bool XNNConfig::parseConfig(std::string filename)
     else if (src_format == "RGBA") {
         src_format = XNN_PIX_RGBA;
     }
+    else if (src_format == "RGB2GRAY") {
+        src_format = XNN_PIX_RGB2GRAY;
+    }
+    else if (src_format == "BGR2GRAY") {
+        src_format = XNN_PIX_BGR2GRAY;
+    }
     else
     {
         fprintf(stderr, "Do not support the source format: %s\n", src_format.c_str());

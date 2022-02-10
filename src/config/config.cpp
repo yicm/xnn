@@ -54,13 +54,16 @@ bool XNNConfig::parseConfig(std::string filename)
         src_format_ = XNN_PIX_GRAY;
     }
     else if (src_format == "RGBA") {
-        src_format = XNN_PIX_RGBA;
+        src_format_ = XNN_PIX_RGBA;
     }
     else if (src_format == "RGB2GRAY") {
-        src_format = XNN_PIX_RGB2GRAY;
+        src_format_ = XNN_PIX_RGB2GRAY;
     }
     else if (src_format == "BGR2GRAY") {
-        src_format = XNN_PIX_BGR2GRAY;
+        src_format_ = XNN_PIX_BGR2GRAY;
+    }
+    else if (src_format == "XNN_PIX_BGR2RGB") {
+        src_format_ = XNN_PIX_BGR2RGB;
     }
     else
     {
@@ -75,6 +78,9 @@ bool XNNConfig::parseConfig(std::string filename)
     else if (dst_format == "GRAY")
     {
         dst_format_ = XNN_PIX_GRAY;
+    }
+    else if (dst_format == "XNN_PIX_BGR2RGB") {
+        dst_format_ = XNN_PIX_BGR2RGB;
     }
     else
     {
@@ -96,7 +102,7 @@ bool XNNConfig::parseConfig(std::string filename)
     has_softmax_ = app_root_["has_softmax"].asBool();
 
     has_parsed_ = true;
-    
+
     return true;
 }
 
@@ -105,7 +111,7 @@ std::string XNNConfig::getModel()
     return model_;
 }
 
-std::string XNNConfig::getParam() 
+std::string XNNConfig::getParam()
 {
     return param_;
 }

@@ -1,0 +1,9 @@
+{
+    "model": "output-detect-nobn.bin",
+    "param": "output-detect-nobn.param",
+    "load_param_bin": false,
+    "num_class": 1,
+    "input_size": 256,
+    "src_format":"XNN_PIX_BGR2RGB",
+    "dst_format":"XNN_PIX_BGR2RGB"
+}

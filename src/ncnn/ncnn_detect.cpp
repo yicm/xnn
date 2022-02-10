@@ -153,11 +153,6 @@ namespace xnn
 
                     if (confidence >= prob_threshold)
                     {
-                        // yolov5/models/yolo.py Detect forward
-                        // y = x[i].sigmoid()
-                        // y[..., 0:2] = (y[..., 0:2] * 2. - 0.5 + self.grid[i].to(x[i].device)) * self.stride[i]  # xy
-                        // y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i]  # wh
-
                         float dx = sigmoid(featptr[0]);
                         float dy = sigmoid(featptr[1]);
                         float dw = sigmoid(featptr[2]);
@@ -190,8 +185,6 @@ namespace xnn
     }
 
     bool NCNNDetect::init(int num_class,
-                         std::vector<float> &means,
-                         std::vector<float> &normals,
                          std::string param_path,
                          std::string bin_path,
                          int input_size,
@@ -202,17 +195,9 @@ namespace xnn
             fprintf(stderr, "Parameter error: invalid number(%d) of class\n", num_class);
             return false;
         }
-        if (means.size() <= 0 || normals.size() <= 0)
-        {
-            fprintf(stderr, "Parameter error: the size of MEANs or NORMALs is 0\n");
-            return false;
-        }
         // get class number
         num_class_ = num_class;
         input_size_ = input_size;
-        // get means and normals
-        means_ = means;
-        normals_ = normals;
         // is param file binary file?
         load_param_bin_ = load_param_bin;
         // create interpreter from param/bin file

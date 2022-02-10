@@ -15,7 +15,7 @@
 #endif
 
 #define TOPK 5
-#define LOOP 10
+#define LOOP 1
 
 void readRawData(const char *filename, unsigned char *data) {
     FILE *fp = NULL;
@@ -49,7 +49,7 @@ int readImgData(const char *filename, XNNImage &image) {
     // read image
     int h, w, channel;
     // read image with channel 1
-    int desired_channels = 1;
+    int desired_channels = 3;
     #ifdef USE_STB
     auto input_image = stbi_load(filename, &w, &h, &channel, desired_channels);
     if (!input_image)
@@ -94,15 +94,13 @@ int main(int argc, char *argv[])
     XNNConfig::GetInstance()->parseConfig();
     // get parameters from config.json
     int num_class = XNNConfig::GetInstance()->getNumClass();
-    std::vector<float> means;
-    std::vector<float> normals;
     std::string bin_path = XNNConfig::GetInstance()->getBin();
     std::string param_path = XNNConfig::GetInstance()->getParam();
     bool is_load_param_bin = XNNConfig::GetInstance()->isLoadParamBin();
     int target_size = XNNConfig::GetInstance()->getInputSize();
     // init
     xnn::NCNNDetect ncnn_detect;
-    if (!ncnn_detect.init(num_class, means, normals, param_path, bin_path, target_size, is_load_param_bin)) {
+    if (!ncnn_detect.init(num_class, param_path, bin_path, target_size, is_load_param_bin)) {
         fprintf(stderr, "Failed to init.\n");
         return -1;
     }
@@ -125,7 +123,10 @@ int main(int argc, char *argv[])
 
         // print result
         for (int i = 0; i < result.size(); ++i) {
-            fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
+            fprintf(stdout, "%d = %.5f at %.2f %.2f (w=%.2f x h=%.2f)\n",
+                result[i].label, result[i].prob, result[i].rect.x, result[i].rect.y,
+                result[i].rect.width, result[i].rect.height);
+            //fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
         }
         fprintf(stdout, "--------------------------\n");
         // abort timer

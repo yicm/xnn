@@ -16,8 +16,6 @@ namespace xnn
     {
     public:
         bool init(int num_class,
-                  std::vector<float> &means,
-                  std::vector<float> &normals,
                   std::string param_path,
                   std::string bin_path,
                   int input_size,
@@ -35,11 +33,9 @@ namespace xnn
 
         int num_class_;
         int input_size_;
-        std::vector<float> means_;
-        std::vector<float> normals_;
         bool load_param_bin_;
 
-        float prob_threshold_ = 0.25f;
+        float prob_threshold_ = 0.9f;
         float nms_threshold_ = 0.45f;
 
     };

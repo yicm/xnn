@@ -1,0 +1,42 @@
+build   --toolchain_resolution_debug
+# if comment it, Bazel will cache the failure and not bother re-running analysis,
+# and then no debug output is added
+#build   --nokeep_state_after_build
+
+
+# Use targets in @platforms//cpu and @platforms//os.
+# @bazel_tools//platforms will be removed by
+# --incompatible_use_platforms_repo_for_constraints
+#build   --incompatible_use_platforms_repo_for_constraints
+
+# Set golang proxy
+test --action_env=GOPROXY=https://goproxy.cn
+build --action_env=GOPROXY=https://goproxy.cn
+run --action_env=GOPROXY=https://goproxy.cn
+
+# --------------------------
+# Way1: enable/disable --crosstool_top,--cpu
+# --------------------------
+#build:compiler_config --crosstool_top=//toolchains/cpp:compiler_suite
+#build:compiler_config --cpu=ubuntu_gcc
+#build:compiler_config --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+# --------------------------
+# Way2: enable/diable platform
+# --------------------------
+build   --incompatible_enable_cc_toolchain_resolution
+
+# --------------------------
+# Way only: build android application, disable platform
+# --------------------------
+# common:android_x86 --crosstool_top=@androidndk//:default_crosstool
+# common:android_x86 --cpu=x86
+# common:android_x86 --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+# common:android_armeabi-v7a --crosstool_top=@androidndk//:default_crosstool
+# common:android_armeabi-v7a --cpu=armeabi-v7a
+# common:android_armeabi-v7a --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+# common:android_arm64-v8a --crosstool_top=@androidndk//:default_crosstool
+# common:android_arm64-v8a --cpu=arm64-v8a
+# common:android_arm64-v8a --host_crosstool_top=@bazel_tools//tools/cpp:toolchain

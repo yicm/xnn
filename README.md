@@ -18,6 +18,28 @@ $ make -j
 $ make install DESTDIR={your destination}
 ```
 
+## Build Android JNI Library
+
+Environment：
+
+- WSL,Ubuntu18.04
+- Bazel 3.3+
+- Android JNI Library
+    - Local JDK 8+(just for using `javah` or `javac` to generate native headers)
+        - `sudo apt install openjdk-8-jdk-headless`
+    - Android sdkmanager (https://developer.android.com/studio#command-tools)
+        - config the environment of `sdkmanager`
+        - `sdkmanager --sdk_root=$HOME/Android --list`
+        - `sdkmanager --sdk_root=$HOME/Android 'build-tools;29.0.2'`
+        - `sdkmanager --sdk_root=$HOME/Android 'platforms;android-28'`
+        - `sdkmanager --sdk_root=$HOME/Android --install "ndk;18.1.5063045"`
+
+Build:
+
+```shell
+$ bazel build --platforms=//platforms:p_android_aarch64 android:jni_lib_shared
+```
+
 # Cross-compiling & Install
 
 ```bash

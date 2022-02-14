@@ -184,6 +184,7 @@ namespace xnn
         }
     }
 
+
     bool NCNNDetect::init(int num_class,
                          std::string param_path,
                          std::string bin_path,
@@ -277,7 +278,7 @@ namespace xnn
         }
         else
         {
-            extractor.input(input_layer_name_.c_str(), in);
+            extractor.input(input_layer_name_.c_str(), in_pad);
         }
         // out extract
         std::vector<DetectObject> proposals;

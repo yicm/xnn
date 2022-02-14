@@ -295,7 +295,7 @@
         }
         else
         {
-            extractor.input(input_layer_name_.c_str(), in);
+            extractor.input(input_layer_name_.c_str(), in_pad);
         }
         // out extract
         std::vector<DetectObject> proposals;

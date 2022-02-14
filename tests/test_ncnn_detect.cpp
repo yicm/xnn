@@ -17,8 +17,9 @@
 #define TOPK 5
 #define LOOP 1
 
-void readRawData(const char *filename, unsigned char *data) {
+void readRawData(const char *filename, XNNImage &image, int w, int h) {
     FILE *fp = NULL;
+    fprintf(stdout, "filename = %s\n", filename);
     // open file
     fp = fopen(filename,"rb");
     if(fp == NULL)
@@ -29,9 +30,13 @@ void readRawData(const char *filename, unsigned char *data) {
     // get file size
     fseek (fp , 0 , SEEK_END);
     long file_size = ftell(fp);
+    image.data = (unsigned char*)malloc(file_size);
+    fprintf(stdout, "filesize = %ld\n", file_size);
     rewind(fp);
     // read data
-    size_t size = fread(data, sizeof(char), file_size, fp);
+    size_t size = fread(image.data, sizeof(char), file_size, fp);
+    image.width = w;
+    image.height = h;
     fclose(fp);
     fp = NULL;
 }
@@ -110,8 +115,9 @@ int main(int argc, char *argv[])
     XNNImage image;
     image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
     image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
-    //readRawData(argv[1], image.data);
-    readImgData(argv[1], image);
+    // readRawData(argv[1], image, 320, 64);
+    saveImgRawData(argv[1], image.data, image.width, image.height, img_channel);
+    //readImgData(argv[1], image);
 
     long long average_time = 0;
     std::vector<DetectObject> result;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-#define USE_STB
+// #define USE_STB
 #ifdef USE_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -44,6 +44,7 @@ void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int 
     fwrite(raw, 1, w * h * c, fp);
     fclose(fp);
 }
+
 
 int readImgData(const char *filename, XNNImage &image) {
     // read image

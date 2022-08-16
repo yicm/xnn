@@ -7,7 +7,7 @@
 #include "config/config.hpp"
 #include "ncnn/ncnn_clazz.hpp"
 
-#define USE_STB
+//#define USE_STB
 #ifdef USE_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -131,12 +131,13 @@ int main(int argc, char *argv[])
         // get all file in a sub directory
         std::vector<std::string> clazz_all_files;
         getFiles(dataset_clazz_dirs[i], clazz_all_files);
+        std::cout << "all file num " << clazz_all_files.size() << std::endl;
         for (int j = 0; j < clazz_all_files.size(); j++)
         {
             // start timing
             auto start = std::chrono::system_clock::now();
             // read image
-            int desired_channels = 0;
+            int desired_channels = 1;
             int h, w, channel;
             #ifdef USE_STB
             auto input_image = stbi_load(clazz_all_files[j].c_str(), &w, &h, &channel, desired_channels);

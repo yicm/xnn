@@ -49,9 +49,9 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
  * Method:    initHandle
  * Signature: (Lcom/biedamingming/xnn/common/XnnObjDetectHandle;Landroid/content/res/AssetManager;Landroid/content/Context;)Lcom/biedamingming/xnn/XnnStatus;
  */
-
 JNIEXPORT jobject JNICALL Java_com_biedamingming_xnn_ObjDetect_initHandle
   (JNIEnv *env, jobject, jobject obj_detect_handle, jobject jmgr, jobject jcontext) {
+    LOG_E("Start to new NCNNDetect.");
     int num_class = 1;
     std::string param_path = "output-detect-nobn.param";
     std::string bin_path = "output-detect-nobn.bin";
@@ -64,17 +64,20 @@ JNIEXPORT jobject JNICALL Java_com_biedamingming_xnn_ObjDetect_initHandle
         LOG_E("Failed to new NCNNDetect.");
         return jni_error(env);
     }
+    LOG_E("Success to new NCNNDetect");
 
     if (!ncnn_detect->init(num_class, param_path, bin_path, target_size, is_load_param_bin, cmgr)) {
         LOG_E("Failed to init.");
         return jni_error(env);
     }
+    LOG_E("Success to init NCNNDetect");
 
     jclass detect_handle_clazz = env->GetObjectClass(obj_detect_handle);
     if (NULL == detect_handle_clazz) {
         LOG_E("Find Class DetectHandle Failed.");
         return jni_error(env);
     }
+    LOG_E("Success to find class detecthandle");
     jfieldID fp_work_handle = env->GetFieldID(detect_handle_clazz, "p_handle", "J");
     if (NULL == fp_work_handle) {
         LOG_E("Get FieldID p_work_handle Failed.");

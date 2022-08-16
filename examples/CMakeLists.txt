@@ -24,7 +24,7 @@ FOREACH(testsourcefile ${APP_SOURCES})
         module_common
         #module_mnn
         module_ncnn
-        module_tengine
+        #module_tengine
         )
 
     INSTALL(TARGETS ${testname}

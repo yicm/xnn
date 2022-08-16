@@ -36,7 +36,7 @@ namespace xnn
         bool load_param_bin_;
 
         float prob_threshold_ = 0.8f;
-        float nms_threshold_ = 0.45f;
+        float nms_threshold_ = 0.4f;
 
     };
 } // namespace xnn

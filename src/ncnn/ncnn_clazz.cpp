@@ -20,7 +20,7 @@ namespace xnn
                 for (size_t j = 0; j < layer->tops.size(); j++)
                 {
                     int blob_index = layer->tops[j];
-                    std::string name = blobs_[blob_index].name;
+                    std::string name = blobs_[blob_index].name.c_str();
                     input_layer_name_ = name;
                 }
             }
@@ -84,10 +84,12 @@ namespace xnn
             net_.opt.use_vulkan_compute = false;
             if (load_param_bin)
             {
+                // 加密方式
                 net_.load_param_bin(param_path.c_str());
             }
             else
             {
+                // 非加密方式
                 net_.load_param(param_path.c_str());
             }
             net_.load_model(bin_path.c_str());
@@ -105,6 +107,41 @@ namespace xnn
         // get input name and output name of net
         blobs_ = net_.mutable_blobs();
         layers_ = net_.layers();
+
+
+        if(load_param_bin){
+            input  	= 0;
+            output 	= blobs_.size() - 1;
+        }
+        else{
+            for(size_t i = 0; i < layers_.size(); i++){		// get input & output name
+                const ncnn::Layer * layer = layers_[i];
+
+                // get input name
+                if(layer->type == "Input"){
+                    for (size_t j = 0; j < layer->tops.size(); j++){
+                        int blob_index = layer->tops[j];
+                        strcpy(input_str, blobs_[blob_index].name.c_str());
+                         //blobs_[blob_index].name.copy(input_str, blobs_[blob_index].name.length(), 0);
+                         //input_str[blobs_[blob_index].name.length()] = '\0';
+                    }
+                }
+
+                // get output name
+
+                for (size_t j = 0; j < layer->bottoms.size(); j++){
+                    int blob_index = layer->bottoms[j];
+                    if(layer->type == "InnerProduct"){
+                        //blobs_[blob_index + 1].name.copy(output_str, blobs_[blob_index + 1].name.length(), 0);
+                        strcpy(output_str, blobs_[blob_index + 1].name.c_str());
+                        //output_str[blobs_[blob_index + 1].name.length()] = '\0';
+                    }
+
+                }
+            }
+
+        }
+
 
         getNetInputName();
         getNetOutputName();
@@ -146,15 +183,25 @@ namespace xnn
         }
         ncnn::Extractor extractor = net_.create_extractor();
         ncnn::Mat out;
+        std::cout << "input_layer_name:===" << input_str << "====" << std::endl;
+        std::cout << "output_layer_name:===" <<  output_str << "===="<< std::endl;
+        std::cout << "input_layer_name:===" << input_layer_name_.c_str() << "====" << std::endl;
+        std::cout << "output_layer_name:===" <<  output_layer_name_.c_str() << "===="<< std::endl;
         if (load_param_bin_)
         {
-            extractor.input(atoi(input_layer_name_.c_str()), in);
-            extractor.extract(atoi(output_layer_name_.c_str()), out);
+            // 加密方式
+            // extractor.input(atoi(input_layer_name_.c_str()), in);
+            // extractor.extract(atoi(output_layer_name_.c_str()), out);
+            extractor.input(input, in);
+            extractor.extract(output, out);
         }
         else
         {
-            extractor.input(input_layer_name_.c_str(), in);
-            extractor.extract(output_layer_name_.c_str(), out);
+            // 非加密方式
+            // extractor.input(input_layer_name_.c_str(), in);
+            // extractor.extract(output_layer_name_.c_str(), out);
+            extractor.input(input_str, in);
+            extractor.extract(output_str, out);
         }
         // manually call softmax on the fc output
         if (!has_softmax_)

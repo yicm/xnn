@@ -16,6 +16,12 @@ LINK_DIRECTORIES(
     ${TENGINE_LIBRARY_DIR}
 )
 
+find_package(OpenCV REQUIRED)
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+
+
 FILE(GLOB APP_SOURCES *.cpp)
 FOREACH(testsourcefile ${APP_SOURCES})
     STRING(REGEX MATCH "[^/]+$" testsourcefilewithoutpath ${testsourcefile})
@@ -29,6 +35,7 @@ FOREACH(testsourcefile ${APP_SOURCES})
         module_mnn
         module_ncnn
         module_tengine
+        ${OpenCV_LIBS}
         )
 
     INSTALL(TARGETS ${testname}

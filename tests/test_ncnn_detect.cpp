@@ -15,7 +15,7 @@
 #endif
 
 #define TOPK 5
-#define LOOP 1
+#define LOOP 5
 
 void readRawData(const char *filename, XNNImage &image, int w, int h) {
     FILE *fp = NULL;
@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
     image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
     image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
     // readRawData(argv[1], image, 320, 64);
-    saveImgRawData(argv[1], image.data, image.width, image.height, img_channel);
-    //readImgData(argv[1], image);
+    //saveImgRawData(argv[1], image.data, image.width, image.height, img_channel);
+    readImgData(argv[1], image);
 
     long long average_time = 0;
     std::vector<DetectObject> result;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
                 result[i].rect.width, result[i].rect.height);
             //fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
         }
-        fprintf(stdout, "--------------------------\n");
+        fprintf(stdout, "-------------result size=%lu-------------\n", result.size());
         // abort timer
         auto end = std::chrono::system_clock::now();
         auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

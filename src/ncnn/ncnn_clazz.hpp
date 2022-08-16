@@ -48,6 +48,13 @@ namespace xnn
         bool has_softmax_;
         bool load_param_bin_;
 
+
+        char input_str[16];
+        char output_str[16];
+
+        int input;
+        int output;
+
     };
 } // namespace xnn
 

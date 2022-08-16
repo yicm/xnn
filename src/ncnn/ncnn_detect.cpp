@@ -240,6 +240,7 @@ namespace xnn
         // letterbox pad to multiple of MAX_STRIDE
         int w = image->width;
         int h = image->height;
+        fprintf(stdout, "imgw=%d, imgh=%d, input_size=%d\n", w, h, input_size_);
         float scale = 1.f;
         if (w > h)
         {
@@ -258,8 +259,11 @@ namespace xnn
         if (image->width == input_size_ && image->height == input_size_) {
             in = ncnn::Mat::from_pixels(image->data, convertXNNPixFormat2NCNN(image->src_pixel_format), input_size_, input_size_);
         } else {
+            fprintf(stdout, "src pix format=%d\n", image->src_pixel_format);
+            fprintf(stdout, "imgw=%d, imgh=%d, input_size=%d, w = %d, h=%d\n", w, h, input_size_, image->width, image->height);
             in = ncnn::Mat::from_pixels_resize(image->data, convertXNNPixFormat2NCNN(image->src_pixel_format), image->width, image->height, w, h);
         }
+        fprintf(stdout, "xxxxx\n");
 
         // pad to target_size rectangle
         int wpad = (w + MAX_STRIDE - 1) / MAX_STRIDE * MAX_STRIDE - w;

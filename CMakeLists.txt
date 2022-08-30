@@ -9,12 +9,12 @@ APP_EXTRACT_VERSION()
 
 PROJECT(HelloApp VERSION ${XNN_APP_VERSION} LANGUAGES CXX)
 
-OPTION(BUILD_TESTS "Build with tests" OFF)
+OPTION(BUILD_TESTS "Build with tests" ON)
 OPTION(BUILD_EXAMPLES "Build with examples" ON)
 OPTION(BUILD_BENCHMARKS "Build with benchmarks" OFF)
 OPTION(BUILD_NN_MODULES_ONLY "Only build nn modules" ON)
 OPTION(BUILD_WITH_MNN "Build with MNN" OFF)
-OPTION(BUILD_WITH_TENGINE "Build with Tengine" OFF)
+OPTION(BUILD_WITH_TENGINE "Build with Tengine" ON)
 
 MESSAGE(INFO "--------------------------------")
 MESSAGE(STATUS "Build XNNApp: ${XNN_APP_VERSION}")

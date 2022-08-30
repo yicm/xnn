@@ -1,5 +1,5 @@
 #include "common/common.hpp"
-#include "ncnn/ncnn_detect.hpp"
+#include "ncnn/yolo_fastv2.hpp"
 
 #include <iostream>
 #include <chrono>
@@ -38,16 +38,15 @@ int main(int argc, char *argv[])
 
     // get parameters from config.json
     int num_class = 1;
-    std::string bin_path = "output-detect-gray-nobn.bin";
-    std::string param_path = "output-detect-gray-nobn.param";
+
     bool is_load_param_bin = false;
     int target_size = atoi(argv[4]);
     // init
-    xnn::NCNNDetect ncnn_detect;
-    if (!ncnn_detect.init(num_class, param_path, bin_path, target_size, is_load_param_bin)) {
-        fprintf(stderr, "Failed to init.\n");
-        return -1;
-    }
+    xnn::yoloFastestv2 api;
+
+    api.loadModel("./output-detect-fast-opt.param", "./output-detect-fast-opt.bin", target_size);
+
+    std::vector<xnn::TargetBox> boxes;
 
     // run
     int img_channel = 3; // XNN_PIX_GRAY;
@@ -61,21 +60,20 @@ int main(int argc, char *argv[])
     readRawData(argv[1], image.data);
 
     long long average_time = 0;
-    std::vector<DetectObject> result;
+
     for (int i = 0; i < LOOP; i++) {
         // start timing
         auto start = std::chrono::system_clock::now();
         // run classfication
-        ncnn_detect.run(&image, result, TOPK);
+        api.detection(&image, boxes);
 
         // print result
-        for (int i = 0; i < result.size(); ++i) {
-            fprintf(stdout, "%d = %.5f at %.2f %.2f (w=%.2f x h=%.2f)\n",
-                result[i].label, result[i].prob, result[i].rect.x, result[i].rect.y,
-                result[i].rect.width, result[i].rect.height);
-            //fprintf(stdout, "result[%d] =  [label=%d, socre=%f]\n", i, result[i].label, result[i].prob);
+        for (int i = 0; i < boxes.size(); ++i) {
+            fprintf(stdout, "(x1=%d, y1=%d)- (x2=%d, y2=%d), score=%.2f, category=%d\n",
+                boxes[i].x1, boxes[i].y1, boxes[i].x2, boxes[i].y2,
+                boxes[i].score * 100, boxes[i].cate);
         }
-        fprintf(stdout, "-------------result size=%lu-------------\n", result.size());
+        fprintf(stdout, "-------------result size=%lu-------------\n", boxes.size());
         // abort timer
         auto end = std::chrono::system_clock::now();
         auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -88,7 +86,6 @@ int main(int argc, char *argv[])
     // release
     delete []image.data;
     image.data = nullptr;
-    ncnn_detect.release();
 
     return 0;
 }

@@ -302,12 +302,12 @@ void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int 
             ncnn::Mat out;
             extractor.extract("output", out);
             ncnn::Mat anchors(6);
-            anchors[0] = 10.f;
-            anchors[1] = 13.f;
-            anchors[2] = 16.f;
-            anchors[3] = 30.f;
-            anchors[4] = 33.f;
-            anchors[5] = 23.f;
+            anchors[0] = 19.f;
+            anchors[1] = 27.f;
+            anchors[2] = 44.f;
+            anchors[3] = 40.f;
+            anchors[4] = 38.f;
+            anchors[5] = 94.f;
 
             std::vector<DetectObject> objects8;
             generate_proposals(anchors, 8, in_pad, out, prob_threshold_, objects8);
@@ -318,14 +318,14 @@ void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int 
         // stride 16
         {
             ncnn::Mat out;
-            extractor.extract("365", out);
+            extractor.extract("468", out);
             ncnn::Mat anchors(6);
-            anchors[0] = 30.f;
-            anchors[1] = 61.f;
-            anchors[2] = 62.f;
-            anchors[3] = 45.f;
-            anchors[4] = 59.f;
-            anchors[5] = 119.f;
+            anchors[0] = 96.f;
+            anchors[1] = 68.f;
+            anchors[2] = 86.f;
+            anchors[3] = 152.f;
+            anchors[4] = 180.f;
+            anchors[5] = 137.f;
 
             std::vector<DetectObject> objects16;
             generate_proposals(anchors, 16, in_pad, out, prob_threshold_, objects16);
@@ -336,14 +336,14 @@ void saveImgRawData(const char *filename, unsigned char *raw, int w, int h, int 
         // stride 32
         {
             ncnn::Mat out;
-            extractor.extract("385", out);
+            extractor.extract("508", out);
             ncnn::Mat anchors(6);
-            anchors[0] = 116.f;
-            anchors[1] = 90.f;
-            anchors[2] = 156.f;
-            anchors[3] = 198.f;
-            anchors[4] = 373.f;
-            anchors[5] = 326.f;
+            anchors[0] = 140.f;
+            anchors[1] = 301.f;
+            anchors[2] = 303.f;
+            anchors[3] = 264.f;
+            anchors[4] = 238.f;
+            anchors[5] = 542.f;
 
             std::vector<DetectObject> objects32;
             generate_proposals(anchors, 32, in_pad, out, prob_threshold_, objects32);

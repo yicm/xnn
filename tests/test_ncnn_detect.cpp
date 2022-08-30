@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-#define USE_STB
+// #define USE_STB
 #ifdef USE_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -54,7 +54,7 @@ int readImgData(const char *filename, XNNImage &image) {
     // read image
     int h, w, channel;
     // read image with channel 1
-    int desired_channels = 3;
+    int desired_channels = 1;
     #ifdef USE_STB
     auto input_image = stbi_load(filename, &w, &h, &channel, desired_channels);
     if (!input_image)
@@ -63,6 +63,7 @@ int readImgData(const char *filename, XNNImage &image) {
         return -1;
     }
     #else
+    fprintf(stdout, "read image with opencv\n");
     cv::Mat input_image = cv::imread(filename, image.src_pixel_format == XNN_PIX_GRAY ? 0 : 1);
     if (input_image.empty()) {
         fprintf(stderr, "failed to read image: %s\n", filename);
@@ -115,9 +116,9 @@ int main(int argc, char *argv[])
     XNNImage image;
     image.src_pixel_format = XNNConfig::GetInstance()->getSrcFormat();
     image.dst_pixel_format = XNNConfig::GetInstance()->getDstFormat();
-    // readRawData(argv[1], image, 320, 64);
+    readRawData(argv[1], image, 2592, 1944);
     //saveImgRawData(argv[1], image.data, image.width, image.height, img_channel);
-    readImgData(argv[1], image);
+    //readImgData(argv[1], image);
 
     long long average_time = 0;
     std::vector<DetectObject> result;

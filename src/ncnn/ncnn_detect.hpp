@@ -35,7 +35,7 @@ namespace xnn
         int input_size_;
         bool load_param_bin_;
 
-        float prob_threshold_ = 0.8f;
+        float prob_threshold_ = 0.5f;
         float nms_threshold_ = 0.4f;
 
     };
